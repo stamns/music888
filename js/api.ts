@@ -34,7 +34,7 @@ interface ApiSource {
     type: 'nec' | 'meting'; // nec = NeteaseCloudMusicApi Enhanced, meting = Meting API
 }
 
-// NOTE: API 源配置 - 支持两种接口格式
+// NOTE: API 源配置 - 支持多个备用源，按优先级排列
 const API_SOURCES: ApiSource[] = [
     {
         name: '主 API',
@@ -42,7 +42,17 @@ const API_SOURCES: ApiSource[] = [
         type: 'meting'
     },
     {
-        name: '备用 API (NEC Enhanced)',
+        name: '备用 API 1',
+        url: 'https://api.injahow.cn/meting',
+        type: 'meting'
+    },
+    {
+        name: '备用 API 2',
+        url: 'https://meting.qjqq.cn',
+        type: 'meting'
+    },
+    {
+        name: '备用 API (NEC)',
         url: 'https://nec8.de5.net',
         type: 'nec'
     }
