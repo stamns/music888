@@ -612,6 +612,42 @@ body {
     color: #fff;
 }
 
+.song-actions {
+    display: flex;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.song-item:hover .song-actions {
+    opacity: 1;
+}
+
+.action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.action-btn.favorite-btn:hover {
+    background: rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+}
+
 .song-info {
     flex: 1;
     min-width: 0;
@@ -1210,6 +1246,11 @@ body {
         min-height: auto;
         height: auto;
     }
+}
+
+/* 桌面端隐藏移动端元素 */
+.mobile-page-indicators {
+    display: none;
 }
 
 @media (max-width: 768px) {

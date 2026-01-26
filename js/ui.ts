@@ -107,8 +107,8 @@ function renderSongItems(songs: Song[], startIndex: number, container: HTMLEleme
                 <button class="action-btn favorite-btn" title="添加到我的喜欢" aria-label="添加到我的喜欢">
                     <i class="${favoriteIconClass}" style="${favoriteStyle}"></i>
                 </button>
-                <button class="action-btn download-btn" title="下载音乐" aria-label="下载音乐">
-                    <i class="fas fa-download"></i>
+                <button class="action-btn play-icon-btn" title="播放" aria-label="播放">
+                    <i class="fas fa-play"></i>
                 </button>
             </div>
         `;
@@ -141,11 +141,11 @@ function renderSongItems(songs: Song[], startIndex: number, container: HTMLEleme
             });
         }
 
-        const downloadBtn = songItem.querySelector('.download-btn');
-        if (downloadBtn) {
-            downloadBtn.addEventListener('click', (e) => {
+        const playIconBtn = songItem.querySelector('.play-icon-btn');
+        if (playIconBtn) {
+            playIconBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                player.downloadSongByData(song);
+                player.playSong(index, playlistForPlayback, currentScrollState ? currentScrollState.containerId : 'searchResults');
             });
         }
 

@@ -306,12 +306,12 @@ function adjustVolume(delta: number): void {
  */
 async function handleSearch(): Promise<void> {
     const searchInput = getElement<HTMLInputElement>('#searchInput');
-    const sourceSelect = getElement<HTMLSelectElement>('#sourceSelect');
+    // const sourceSelect = getElement<HTMLSelectElement>('#sourceSelect'); // 已移除
 
-    if (!searchInput || !sourceSelect) return;
+    if (!searchInput) return;
 
     const keyword = searchInput.value;
-    const source = sourceSelect.value;
+    const source = 'netease'; // 默认使用网易云
 
     if (!keyword.trim()) {
         ui.showNotification('请输入搜索关键词', 'warning');
