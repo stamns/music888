@@ -200,14 +200,8 @@ export async function fetchWithRetry(
             clearTimeout(timeoutId);
 
             if (response.ok) {
-                // NOTE: 检查响应内容类型，确保是 JSON 而非 HTML 错误页面
-                const contentType = response.headers.get('content-type') || '';
-                if (contentType.includes('text/html')) {
-                    // 可能是错误页面，尝试读取内容进行诊断
-                    const text = await response.text();
-                    console.error('API 返回 HTML 而非 JSON:', text.substring(0, 200));
-                    throw new Error('API returned HTML instead of JSON, possible error page');
-                }
+                // NOTE: 移除 Content-Type 检查，因为部分 API（如 Meting）可能返回 text/html 但内容实际是 JSON
+                // 让调用者自己处理解析错误
                 return response;
             } else {
                 throw new Error(`API returned error: ${response.status}`);
@@ -339,9 +333,19 @@ export async function getLyrics(song: Song): Promise<{ lyric: string }> {
     // 1. 优先尝试 Meting API
     try {
         const response = await fetchWithRetry(`${metingUrl}/?type=lrc&id=${song.lyric_id || song.id}`);
-        const result = await response.json();
-        if (result && (result.lyric || result.lrc)) {
-            return { lyric: result.lyric || result.lrc };
+        // NOTE: Meting API (type=lrc) 可能直接返回歌词文本，也可能返回 JSON
+        const text = await response.text();
+
+        try {
+            const result = JSON.parse(text);
+            if (result && (result.lyric || result.lrc)) {
+                return { lyric: result.lyric || result.lrc };
+            }
+        } catch {
+            // 解析 JSON 失败，说明返回的是纯文本歌词
+            if (text && text.length > 0) {
+                return { lyric: text };
+            }
         }
     } catch (e) {
         console.warn('Meting API 获取歌词失败，回退到 NEC API:', e);
