@@ -35,26 +35,27 @@ interface ApiSource {
 }
 
 // NOTE: API 源配置 - 支持多个备用源，按优先级排列
+// IMPORTANT: NEC API 目前最稳定，其他 Meting API 可能返回 HTML 页面
 const API_SOURCES: ApiSource[] = [
     {
-        name: '主 API',
-        url: 'https://music-api.gdstudio.xyz/api.php',
-        type: 'meting'
+        name: 'NEC API',
+        url: 'https://nec8.de5.net',
+        type: 'nec'
     },
     {
-        name: '备用 API 1',
+        name: '备用 Meting 1',
         url: 'https://api.injahow.cn/meting',
         type: 'meting'
     },
     {
-        name: '备用 API 2',
+        name: '备用 Meting 2',
         url: 'https://meting.qjqq.cn',
         type: 'meting'
     },
     {
-        name: '备用 API (NEC)',
-        url: 'https://nec8.de5.net',
-        type: 'nec'
+        name: '备用 Meting 3',
+        url: 'https://music-api.gdstudio.xyz/api.php',
+        type: 'meting'
     }
 ];
 
@@ -87,11 +88,12 @@ function toProxyUrl(url: string): string {
 
 /**
  * 测试 API 可用性（通过代理）
+ * NOTE: 不仅测试连接，还验证返回的是有效 JSON 数据
  */
 async function testAPI(api: ApiSource): Promise<boolean> {
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
 
         let testUrl: string;
         if (api.type === 'nec') {
@@ -104,8 +106,35 @@ async function testAPI(api: ApiSource): Promise<boolean> {
         const proxyUrl = toProxyUrl(testUrl);
         const response = await fetch(proxyUrl, { signal: controller.signal });
         clearTimeout(timeoutId);
-        return response.ok;
+
+        if (!response.ok) {
+            console.log(`  API 返回状态码: ${response.status}`);
+            return false;
+        }
+
+        // NOTE: 验证响应内容类型，确保不是 HTML 页面
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('text/html')) {
+            console.log(`  API 返回 HTML 而非 JSON`);
+            return false;
+        }
+
+        // 尝试解析 JSON，确保数据有效
+        const text = await response.text();
+        try {
+            const data = JSON.parse(text);
+            // 对于 NEC API，检查是否有有效的 code 字段
+            if (api.type === 'nec') {
+                return data.code === 200;
+            }
+            // 对于 Meting API，检查是否是数组或有效对象
+            return Array.isArray(data) || (typeof data === 'object' && data !== null);
+        } catch {
+            console.log(`  API 响应不是有效 JSON: ${text.substring(0, 100)}`);
+            return false;
+        }
     } catch (error) {
+        console.log(`  API 测试失败: ${error}`);
         return false;
     }
 }
