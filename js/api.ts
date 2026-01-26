@@ -155,7 +155,16 @@ export async function fetchWithRetry(
                 signal: controller.signal
             });
             clearTimeout(timeoutId);
+
             if (response.ok) {
+                // NOTE: 检查响应内容类型，确保是 JSON 而非 HTML 错误页面
+                const contentType = response.headers.get('content-type') || '';
+                if (contentType.includes('text/html')) {
+                    // 可能是错误页面，尝试读取内容进行诊断
+                    const text = await response.text();
+                    console.error('API 返回 HTML 而非 JSON:', text.substring(0, 200));
+                    throw new Error('API returned HTML instead of JSON, possible error page');
+                }
                 return response;
             } else {
                 throw new Error(`API returned error: ${response.status}`);
@@ -279,17 +288,30 @@ export async function searchMusicAPI(keyword: string, source: string): Promise<S
 
 /**
  * 探索雷达 - 获取热门推荐歌曲
+ * NOTE: 包含多层回退机制，确保用户能看到内容
  */
 export async function exploreRadarAPI(): Promise<Song[]> {
-    const keywords = ['周杰伦', '林俊杰', '邓紫棋', '薛之谦', '陈奕迅', '五月天'];
-    const randomKeyword = keywords[Math.floor(Math.random() * keywords.length)];
+    const keywords = ['周杰伦', '林俊杰', '邓紫棋', '薛之谦', '陈奕迅', '五月天', '华晨宇', 'TFBOYS'];
 
-    try {
-        return await searchMusicAPI(randomKeyword, 'netease');
-    } catch (error) {
-        console.error('探索雷达请求失败:', error);
-        return [];
+    // 打乱关键词数组，增加随机性
+    const shuffled = keywords.sort(() => Math.random() - 0.5);
+
+    // 依次尝试不同关键词，直到成功获取数据
+    for (const keyword of shuffled.slice(0, 3)) {
+        try {
+            const songs = await searchMusicAPI(keyword, 'netease');
+            if (songs && songs.length > 0) {
+                console.log(`探索雷达成功获取 ${songs.length} 首歌曲 (关键词: ${keyword})`);
+                return songs;
+            }
+        } catch (error) {
+            console.warn(`探索雷达请求失败 (关键词: ${keyword}):`, error);
+            // 继续尝试下一个关键词
+        }
     }
+
+    console.error('探索雷达: 所有关键词尝试均失败');
+    return [];
 }
 
 /**

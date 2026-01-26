@@ -3,12 +3,12 @@
  * 提供离线缓存和快速加载支持
  */
 
-const CACHE_NAME = 'music888-v1';
+const CACHE_NAME = 'music888-v2';
+
+// NOTE: 静态资源列表 - 只缓存确定存在的核心资源
+// 构建后的 JS/CSS 文件名包含哈希值，无法预先知道，采用运行时缓存策略
 const STATIC_ASSETS = [
-    '/',
-    '/index.html',
-    '/css/style.css',
-    '/manifest.json'
+    '/'
 ];
 
 // 安装事件 - 预缓存静态资源
@@ -17,9 +17,20 @@ self.addEventListener('install', (event) => {
         caches.open(CACHE_NAME)
             .then((cache) => {
                 console.log('正在缓存静态资源...');
-                return cache.addAll(STATIC_ASSETS);
+                // NOTE: 使用 Promise.allSettled 避免单个资源失败导致整体失败
+                return Promise.allSettled(
+                    STATIC_ASSETS.map(url =>
+                        cache.add(url).catch(err => {
+                            console.warn(`缓存资源失败: ${url}`, err);
+                            return null;
+                        })
+                    )
+                );
             })
             .then(() => self.skipWaiting())
+            .catch(err => {
+                console.error('Service Worker 安装失败:', err);
+            })
     );
 });
 
