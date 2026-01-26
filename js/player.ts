@@ -5,13 +5,12 @@
 import * as api from './api';
 import { Song } from './api';
 import * as ui from './ui';
-import { getElement, safeStorage } from './utils';
 
 // --- Player State ---
 let currentPlaylist: Song[] = [];
 let currentIndex: number = -1;
 let isPlaying: boolean = false;
-let audioPlayer: HTMLAudioElement = new Audio();
+const audioPlayer: HTMLAudioElement = new Audio();
 let playMode: 'loop' | 'random' | 'single' = 'loop';
 let playHistory: number[] = [];
 let historyPosition: number = -1;
@@ -306,7 +305,7 @@ function initializeFavoritesPlaylist(): void {
 }
 
 function getFavoritesPlaylistKey(): string | null {
-    for (let [key, playlist] of playlistStorage.entries()) {
+    for (const [key, playlist] of playlistStorage.entries()) {
         if (playlist.isFavorites) return key;
     }
     return null;
@@ -396,7 +395,7 @@ function savePlaylistsToStorage(): void {
 }
 
 // NOTE: 监听音频加载错误，提供详细诊断信息
-audioPlayer.addEventListener('error', (e) => {
+audioPlayer.addEventListener('error', (_e) => {
     const error = audioPlayer.error;
     let errorMsg = '未知错误';
     if (error) {
@@ -455,7 +454,7 @@ audioPlayer.addEventListener('loadedmetadata', () => {
     }
 });
 
-interface LyricLine {
+export interface LyricLine {
     time: number;
     text: string;
 }

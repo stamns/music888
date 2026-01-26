@@ -1,12 +1,7 @@
 import { Song } from './api';
 import * as player from './player';
+import { LyricLine } from './player';
 import { escapeHtml, formatTime, getElement } from './utils';
-
-// --- Type Definitions ---
-interface LyricLine {
-    time: number;
-    text: string;
-}
 
 // --- DOM Element Cache ---
 interface DOMCache {

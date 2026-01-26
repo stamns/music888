@@ -1,23 +1,43 @@
 {
   "name": "music888",
   "version": "1.0.0",
-  "description": "",
+  "description": "云音乐 - 在线音乐播放器，支持多平台搜索、高品质播放、歌词显示",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "lint": "eslint js --ext .ts",
+    "lint:fix": "eslint js --ext .ts --fix",
+    "format": "prettier --write \"js/**/*.ts\" \"css/**/*.css\""
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "music",
+    "player",
+    "typescript",
+    "vite"
+  ],
+  "author": "truelife0958",
+  "license": "MIT",
   "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "node-fetch": "^2.7.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@typescript-eslint/eslint-plugin": "^8.53.1",
+    "@typescript-eslint/parser": "^8.53.1",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
     "jsdom": "^27.4.0",
+    "prettier": "^3.8.1",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.53.1",
     "vite": "^7.1.10",
     "vitest": "^4.0.18"
   }

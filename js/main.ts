@@ -36,7 +36,7 @@ function switchMobilePage(pageIndex: number): void {
     currentMobilePage = pageIndex;
 }
 
-// NOTE: 立即挂载到全局，供 HTML 中的 onclick 使用
+// NOTE: 导出给其他模块使用（如 ui.ts 的点击播放跳转）
 (window as any).switchMobilePage = switchMobilePage;
 
 // --- 全局错误处理 ---
@@ -253,6 +253,52 @@ function bindEventListeners(): void {
             ui.showNotification('播放历史已清空', 'success');
         });
     }
+
+    // NOTE: 全局键盘快捷键
+    document.addEventListener('keydown', (e) => {
+        // 如果正在输入框中，不触发快捷键
+        const activeElement = document.activeElement;
+        if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+            return;
+        }
+
+        switch (e.code) {
+            case 'Space':
+                e.preventDefault();
+                player.togglePlay();
+                break;
+            case 'ArrowLeft':
+                e.preventDefault();
+                player.previousSong();
+                break;
+            case 'ArrowRight':
+                e.preventDefault();
+                player.nextSong();
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                adjustVolume(10);
+                break;
+            case 'ArrowDown':
+                e.preventDefault();
+                adjustVolume(-10);
+                break;
+        }
+    });
+}
+
+/**
+ * 调节音量
+ * @param delta 音量变化值（正数增大，负数减小）
+ */
+function adjustVolume(delta: number): void {
+    const volumeSlider = getElement<HTMLInputElement>('#volumeSlider');
+    if (volumeSlider) {
+        const currentVolume = parseInt(volumeSlider.value, 10);
+        const newVolume = Math.max(0, Math.min(100, currentVolume + delta));
+        volumeSlider.value = newVolume.toString();
+        player.setVolume(newVolume.toString());
+    }
 }
 
 /**
@@ -429,6 +475,18 @@ document.addEventListener('DOMContentLoaded', () => {
             touchEndY = (e as TouchEvent).changedTouches[0].screenY;
             handleSwipe();
         }, { passive: true });
+    }
+
+    // NOTE: 页面指示器点击事件委托（替代行内 onclick）
+    const indicatorContainer = document.querySelector('.mobile-page-indicators');
+    if (indicatorContainer) {
+        indicatorContainer.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            if (target.classList.contains('page-indicator')) {
+                const pageIndex = parseInt(target.dataset.page || '0', 10);
+                switchMobilePage(pageIndex);
+            }
+        });
     }
 
     // NOTE: 初始化移动端页面指示器，确保第一页激活
