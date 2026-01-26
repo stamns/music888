@@ -237,18 +237,23 @@ export async function getAlbumCoverUrl(song: Song, size: number = 300): Promise<
         return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTUiIGhlaWdodD0iNTUiIHZpZXdCb3g9IjAgMCA1NSA1NSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjU1IiBoZWlnaHQ9IjU1IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIHJ4PSI4Ii8+CjxwYXRoIGQ9Ik0yNy41IDE4TDM1IDI3LjVIMzBWMzdIMjVWMjcuNUgyMEwyNy41IDE4WiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+Cjwvc3ZnPgo=';
     }
 
+    const metingUrl = 'https://api.injahow.cn/meting';
+
     try {
-        if (currentAPI.type === 'nec') {
-            // NOTE: NEC API 不直接返回封面 URL，需要从专辑详情获取
-            // 直接构造网易云 CDN 图片 URL（图片一般没有 CORS 问题）
-            return `https://p1.music.126.net/${song.pic_id}/${song.pic_id}.jpg?param=${size}y${size}`;
-        } else {
-            // Meting API 新格式: /?type=pic&id=xxx
-            const response = await fetchWithRetry(`${currentAPI.url}/?type=pic&id=${song.pic_id}`);
-            const data = await response.json();
-            console.log('封面 API 响应:', data);
-            return data?.url || data?.pic || '';
+        // 尝试从 Meting API 获取封面
+        // NOTE: Meting 的 type=pic 通常需要 picId
+        const response = await fetchWithRetry(`${metingUrl}/?type=pic&id=${song.pic_id}`);
+        const data = await response.json();
+        if (data?.url || data?.pic) {
+            return data.url || data.pic;
         }
+    } catch (e) {
+        console.warn('Meting API 获取封面失败，尝试使用 CDN 构造:', e);
+    }
+
+    try {
+        // 回退：直接构造网易云 CDN 图片 URL
+        return `https://p1.music.126.net/${song.pic_id}/${song.pic_id}.jpg?param=${size}y${size}`;
     } catch (error) {
         console.error('获取专辑图失败:', error);
         return '';
@@ -322,21 +327,34 @@ export async function getSongUrl(song: Song, quality: string): Promise<{ url: st
 
 /**
  * 获取歌词
+ * NOTE: 优先使用 Meting API，失败次回退到 NEC API
  */
 export async function getLyrics(song: Song): Promise<{ lyric: string }> {
-    if (currentAPI.type === 'nec') {
-        // NEC API: /lyric
-        const response = await fetchWithRetry(`${currentAPI.url}/lyric?id=${song.id}`);
+    const metingUrl = 'https://api.injahow.cn/meting';
+
+    // 1. 优先尝试 Meting API
+    try {
+        const response = await fetchWithRetry(`${metingUrl}/?type=lrc&id=${song.lyric_id || song.id}`);
+        const result = await response.json();
+        if (result && (result.lyric || result.lrc)) {
+            return { lyric: result.lyric || result.lrc };
+        }
+    } catch (e) {
+        console.warn('Meting API 获取歌词失败，回退到 NEC API:', e);
+    }
+
+    // 2. 回退到 NEC API
+    const necUrl = currentAPI.type === 'nec' ? currentAPI.url : 'https://nec8.de5.net';
+    try {
+        const response = await fetchWithRetry(`${necUrl}/lyric?id=${song.id}`);
         const data = await response.json();
         if (data.code === 200) {
             return { lyric: data.lrc?.lyric || '' };
         }
         return { lyric: '' };
-    } else {
-        // Meting API 新格式: /?type=lrc&id=xxx
-        const response = await fetchWithRetry(`${currentAPI.url}/?type=lrc&id=${song.lyric_id || song.id}`);
-        const result = await response.json();
-        return { lyric: result?.lyric || '' };
+    } catch (error) {
+        console.error('获取歌词失败:', error);
+        return { lyric: '' };
     }
 }
 
