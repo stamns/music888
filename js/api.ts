@@ -47,6 +47,12 @@ const API_SOURCES: ApiSource[] = [
         supportsSearch: true
     },
     {
+        name: 'Meting API (Pro)',
+        url: 'https://tktok.de5.net/api', // 用户提供的新源
+        type: 'meting',
+        supportsSearch: false
+    },
+    {
         name: 'Meting API 1',
         url: 'https://api.injahow.cn/meting',
         type: 'meting',
@@ -215,6 +221,19 @@ export async function fetchWithRetry(
 }
 
 /**
+ * 获取首选的 Meting API URL
+ */
+function getMetingApiUrl(): string {
+    // 优先查找名为 'Meting API (Pro)' 的源
+    const proApi = API_SOURCES.find(api => api.name === 'Meting API (Pro)');
+    if (proApi) return proApi.url;
+
+    // 否则查找任意 Meting 类型源
+    const metingApi = API_SOURCES.find(api => api.type === 'meting');
+    return metingApi ? metingApi.url : 'https://api.injahow.cn/meting';
+}
+
+/**
  * 获取专辑封面 URL
  */
 export async function getAlbumCoverUrl(song: Song, size: number = 300): Promise<string> {
@@ -228,15 +247,17 @@ export async function getAlbumCoverUrl(song: Song, size: number = 300): Promise<
     }
 
     if (!song.pic_id) {
-        return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTUiIGhlaWdodD0iNTUiIHZpZXdCb3g9IjAgMCA1NSA1NSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjU1IiBoZWlnaHQ9IjU1IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIHJ4PSI4Ii8+CjxwYXRoIGQ9Ik0yNy41IDE4TDM1IDI3LjVIMzBWMzdIMjVWMjcuNUgyMEwyNy41IDE4WiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+Cjwvc3ZnPgo=';
+        return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTUiIGhlaWdodD0iNTUiIHZpZXdCb3g9IjAgMCA1NSA1NSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjU1IiBoZWlnaHQ9IjU1IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU5LDAuMSkiIHJ4PSI4Ii8+CjxwYXRoIGQ9Ik0yNy41IDE4TDM1IDI3LjVIMzBWMzdIMjVWMjcuNUgyMEwyNy41IDE4WiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjMpIi8+Cjwvc3ZnPgo=';
     }
 
-    const metingUrl = 'https://api.injahow.cn/meting';
+    const metingUrl = getMetingApiUrl();
 
     try {
         // 尝试从 Meting API 获取封面
         // NOTE: Meting 的 type=pic 通常需要 picId
         const response = await fetchWithRetry(`${metingUrl}/?type=pic&id=${song.pic_id}`);
+        // ... (后续逻辑保持不变，只需修改 getSongUrl 和 getLyrics 中对 metingUrl 的引用)
+
         const data = await response.json();
         if (data?.url || data?.pic) {
             return data.url || data.pic;
@@ -263,7 +284,7 @@ export async function getAlbumCoverUrl(song: Song, size: number = 300): Promise<
  */
 export async function getSongUrl(song: Song, quality: string): Promise<{ url: string; br: string }> {
     const necUrl = currentAPI.type === 'nec' ? currentAPI.url : 'https://nec8.de5.net';
-    const metingUrl = 'https://api.injahow.cn/meting';
+    const metingUrl = getMetingApiUrl();
 
     // 1. 第一优先级：尝试 UnblockNeteaseMusic 解锁 (跨源匹配完整音频)
     try {
@@ -327,7 +348,7 @@ export async function getSongUrl(song: Song, quality: string): Promise<{ url: st
  * NOTE: 优先使用 Meting API，失败次回退到 NEC API
  */
 export async function getLyrics(song: Song): Promise<{ lyric: string }> {
-    const metingUrl = 'https://api.injahow.cn/meting';
+    const metingUrl = getMetingApiUrl();
 
     // 1. 优先尝试 Meting API
     try {
