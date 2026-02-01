@@ -795,8 +795,7 @@ audioPlayer.addEventListener('loadedmetadata', () => {
         const isProbablyPreview = isInPreviewRange && isNearTypicalDuration;
 
         if (isProbablyPreview && song && !isSeekingFullVersion && fullVersionSearchCount < 2) {
-            logger.warn(`检测到可能的试听版本 (${Math.round(duration)}秒): ${song.name}`);
-            ui.showNotification(`检测到试听版本 (${Math.round(duration)}秒)，正在搜索完整版...`, 'warning');
+            logger.debug(`检测到可能的短版本 (${Math.round(duration)}秒): ${song.name}`);
 
             // 标记正在搜索，防止重入
             isSeekingFullVersion = true;
@@ -814,7 +813,6 @@ audioPlayer.addEventListener('loadedmetadata', () => {
 
                 if (result && result.url) {
                     logger.info('从其他源找到完整版本，自动切换');
-                    ui.showNotification('已找到完整版本，正在无缝切换...', 'success');
 
                     // 保存当前播放状态
                     const wasPlaying = !audioPlayer.paused;
@@ -851,11 +849,10 @@ audioPlayer.addEventListener('loadedmetadata', () => {
                         }, { once: true });
                     });
                 } else {
-                    ui.showNotification(`当前播放的是试听版本 (${Math.round(duration)}秒)`, 'warning');
+                    logger.debug(`未找到更长版本 (${Math.round(duration)}秒)`);
                 }
             }).catch(e => {
-                logger.warn('跨源搜索失败:', e);
-                ui.showNotification(`当前播放的是试听版本 (${Math.round(duration)}秒)`, 'warning');
+                logger.debug('跨源搜索失败:', e);
             }).finally(() => {
                 isSeekingFullVersion = false;
             });

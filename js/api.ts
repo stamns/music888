@@ -690,7 +690,7 @@ export async function tryGetFullVersionFromOtherSources(
     crossSourceSearchInProgress.add(songKey);
 
     try {
-        console.log('检测到试听版本，尝试从其他音乐源获取完整版本...');
+        console.log('尝试从其他音乐源获取更优版本...');
         const artistName = Array.isArray(song.artist) ? song.artist[0] : song.artist;
         const result = await searchSongFromOtherSources(
             song.name,
@@ -834,7 +834,7 @@ export async function getSongUrl(song: Song, quality: string): Promise<SongUrlRe
     // 5. 第五优先级：跨音乐源搜索（当所有候选都是试听版本时）
     // NOTE: 尝试从其他音乐源搜索同名歌曲获取完整版本
     if (candidates.length > 0) {
-        console.log('所有候选可能是试听版本，尝试跨源搜索...');
+        console.log('尝试跨源搜索更优版本...');
         const artistName = Array.isArray(song.artist) ? song.artist[0] : song.artist;
         const crossSourceResult = await searchSongFromOtherSources(
             song.name,
@@ -849,7 +849,7 @@ export async function getSongUrl(song: Song, quality: string): Promise<SongUrlRe
 
     // 如果所有 URL 都可能是试听版本，返回第一个候选
     if (candidates.length > 0) {
-        console.warn('所有获取到的 URL 可能是试听版本，使用第一个候选');
+        console.warn('使用当前可用版本');
         return candidates[0];
     }
 
