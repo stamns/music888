@@ -364,8 +364,10 @@ export interface SongUrlResult {
     url: string;
     /** 比特率 */
     br: string;
-    /** 文件大小（字节）- 用于试听检测 */
+    /** 文件大小（字节）*/
     size?: number;
+    /** 音乐源标识 */
+    source?: string;
 }
 
 /**

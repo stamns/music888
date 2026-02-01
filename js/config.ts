@@ -147,30 +147,36 @@ export const APP_CONFIG = {
 // ============================================
 
 export const PREVIEW_DETECTION = {
-    /** 试听版本最短时长（秒）- 低于此值可能是加载失败 */
-    MIN_DURATION: 20,
+    /** 短版本最短时长（秒）*/
+    MIN_DURATION: 25,
 
-    /** 试听版本最长时长（秒）- 高于此值认为是完整版 */
-    MAX_DURATION: 70,
+    /** 短版本最长时长（秒）*/
+    MAX_DURATION: 65,
 
-    /** 典型试听时长（秒）- 30/60 秒是最常见的试听长度 */
-    TYPICAL_DURATIONS: [30, 60],
+    /** 典型短版本时长（秒）*/
+    TYPICAL_DURATIONS: [25, 30, 45, 60],
 
-    /** 时长容差（秒）- 判断是否接近典型试听时长 */
-    DURATION_TOLERANCE: 3,
+    /** 时长容差（秒）*/
+    DURATION_TOLERANCE: 2,
 
-    /** 最小文件大小（字节）- 用于辅助判断，低于此值可能是试听 */
-    MIN_FILE_SIZE: 800 * 1024, // 800KB，约 30 秒 128kbps
+    /** 最小文件大小（字节）*/
+    MIN_FILE_SIZE: 600 * 1024,
 
-    /** 跨源搜索超时时间（毫秒） */
-    CROSS_SOURCE_TIMEOUT: 10000,
+    /** 跨源搜索超时时间（毫秒）*/
+    CROSS_SOURCE_TIMEOUT: 15000,
 
     /** 跨源搜索最大尝试源数量 */
-    MAX_CROSS_SOURCE_ATTEMPTS: 3,
+    MAX_CROSS_SOURCE_ATTEMPTS: 5,
 
-    /** 歌曲名相似度阈值 - 低于此值不认为是同一首歌 */
-    SIMILARITY_THRESHOLD: 0.5,
+    /** 歌曲名相似度阈值 */
+    SIMILARITY_THRESHOLD: 0.4,
 
-    /** 歌手名匹配权重 - 歌手匹配时增加的相似度分数 */
-    ARTIST_MATCH_BONUS: 0.2,
+    /** 歌手名匹配权重 */
+    ARTIST_MATCH_BONUS: 0.25,
+
+    /** 启用并行搜索 */
+    PARALLEL_SEARCH: true,
+
+    /** 启用预检测（在获取URL阶段就开始跨源搜索）*/
+    PROACTIVE_CHECK: true,
 };
