@@ -12,6 +12,7 @@ import {
     currentIndex,
     setCurrentIndex,
     currentPlaylist,
+    setCurrentPlaylist,
     setPlayingStatus,
     playMode,
     incrementRequestId,
@@ -54,6 +55,7 @@ export async function playSong(
         }
 
         // 2. 更新状态
+        setCurrentPlaylist(playlist);
         setCurrentIndex(index);
         if (!fromHistory) addToHistory(song);
 
