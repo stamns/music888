@@ -1,5 +1,5 @@
 /**
- * 云音乐播放器 - 主程序入口
+ * 沄听播放器 - 主程序入口
  * 负责应用初始化、事件绑定和页面交互逻辑
  */
 import * as api from './api';
@@ -104,7 +104,7 @@ function switchTab(tabName: string): void {
  * 初始化应用程序
  */
 function initializeApp(): void {
-    logger.info('云音乐 App 初始化...');
+    logger.info('沄听 App 初始化...');
 
     // NOTE: 初始化性能监控（采集 Web Vitals）
     initPerformanceMonitoring();

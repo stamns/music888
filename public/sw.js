@@ -1,5 +1,5 @@
 /**
- * 云音乐播放器 Service Worker
+ * 沄听播放器 Service Worker
  * 提供离线缓存和快速加载支持
  */
 

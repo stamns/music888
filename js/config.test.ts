@@ -1,5 +1,5 @@
 /**
- * 云音乐播放器 - 配置模块单元测试
+ * 沄听播放器 - 配置模块单元测试
  */
 import { logger, API_TIMEOUTS, PROXY_DOMAINS, needsProxy, APP_CONFIG, IS_PRODUCTION } from './config';
 

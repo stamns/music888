@@ -1,6 +1,6 @@
 {
-    "name": "云音乐",
-    "short_name": "云音乐",
+    "name": "沄听",
+    "short_name": "沄听",
     "description": "多平台音乐搜索播放器，支持网易云、QQ音乐等12个平台",
     "start_url": "/",
     "display": "standalone",

@@ -1,7 +1,7 @@
 {
   "name": "music888",
   "version": "1.0.0",
-  "description": "云音乐 - 在线音乐播放器，支持多平台搜索、高品质播放、歌词显示",
+  "description": "沄听 - 在线音乐播放器，支持多平台搜索、高品质播放、歌词显示",
   "main": "index.js",
   "scripts": {
     "dev": "vite",

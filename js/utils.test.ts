@@ -1,5 +1,5 @@
 /**
- * 云音乐播放器 - 工具函数单元测试
+ * 沄听播放器 - 工具函数单元测试
  */
 import { escapeHtml, formatTime, debounce, throttle, getElement } from './utils';
 
