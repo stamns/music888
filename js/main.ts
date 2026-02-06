@@ -865,6 +865,12 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
+    // NOTE: 阻止可横向滚动的 filter-bar 触发页面滑动
+    document.querySelectorAll('.filter-bar').forEach(bar => {
+        bar.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+        bar.addEventListener('touchend', e => e.stopPropagation(), { passive: true });
+    });
+
     // NOTE: 页面指示器点击事件委托
     const indicatorContainer = document.querySelector('.mobile-page-indicators');
     if (indicatorContainer) {

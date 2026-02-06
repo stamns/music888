@@ -252,6 +252,21 @@ export function displaySearchResults(songs: Song[], containerId: string, playlis
         return;
     }
 
+    // 批量操作栏
+    const actionBar = document.createElement('div');
+    actionBar.className = 'batch-action-bar';
+    actionBar.innerHTML = `
+        <button class="batch-play-all-btn"><i class="fas fa-play"></i> 播放全部 <span class="batch-count">${songs.length}</span></button>
+    `;
+    container.appendChild(actionBar);
+
+    const playAllBtn = actionBar.querySelector('.batch-play-all-btn');
+    if (playAllBtn) {
+        playAllBtn.addEventListener('click', () => {
+            player.playSong(0, playlistForPlayback, containerId);
+        });
+    }
+
     // 初始化滚动状态
     const batchSize = APP_CONFIG.INFINITE_SCROLL_BATCH_SIZE;
     currentScrollState = {

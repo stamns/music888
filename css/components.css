@@ -726,6 +726,48 @@
     background: rgba(255, 107, 107, 0.25);
 }
 
+/* === Batch Action Bar === */
+.batch-action-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+}
+
+.batch-play-all-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.25), rgba(255, 82, 82, 0.15));
+    border: 1px solid rgba(255, 107, 107, 0.35);
+    border-radius: 20px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s ease;
+}
+
+.batch-play-all-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.4), rgba(255, 82, 82, 0.25));
+    transform: translateY(-1px);
+}
+
+.batch-play-all-btn i {
+    color: var(--color-primary);
+    font-size: 12px;
+}
+
+.batch-count {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    margin-left: 2px;
+}
+
 /* artist-grid 内的按钮需要占满整行 */
 .artist-grid .load-more-btn {
     grid-column: 1 / -1;
